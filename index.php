@@ -5,22 +5,22 @@
     
     if (isset($_GET['id'])) {
         
-        if (!in_array($_GET['id'], $_SESSION['ids'])) {
-            $_SESSION['ids'][] = $_GET['id'];
+        if (!in_array($_GET['id'], $_SESSION['cart'])) {
+            $_SESSION['cart'][] = $_GET['id'];
         }
         
     }
     
-    if (count($_SESSION['ids'])) {        
-        $numberParams = str_repeat('?,', count($_SESSION['ids']) - 1) .'?';
-        $numberType = str_repeat('d', count($_SESSION['ids']));
+    if (count($_SESSION['cart'])) {        
+        $numberParams = str_repeat('?,', count($_SESSION['cart']) - 1) .'?';
+        $numberType = str_repeat('d', count($_SESSION['cart']));
         
         $sql = "SELECT * FROM products WHERE id NOT IN ($numberParams)";
         $stmt = mysqli_prepare($conn, $sql) or die(mysqli_error($conn));
         
         $refarg = array($stmt, $numberType);
-        foreach ($_SESSION['ids'] as $key => $value) {
-            $refarg[] =& $_SESSION['ids'][$key];
+        foreach ($_SESSION['cart'] as $key => $value) {
+            $refarg[] =& $_SESSION['cart'][$key];
         }
         call_user_func_array("mysqli_stmt_bind_param", $refarg);
         mysqli_stmt_execute($stmt);
@@ -38,10 +38,12 @@
 <body>
 
 <table>
-    <th></th>
-    <th><?= translate('Title') ?>: </th>
-    <th><?= translate('Description') ?>: </th>
-    <th><?= translate('Price') ?>: </th>
+    <tr>
+        <th></th>
+        <th><?= translate('Title') ?>: </th>
+        <th><?= translate('Description') ?>: </th>
+        <th><?= translate('Price') ?>: </th>
+    </tr>
     <?php while($product = mysqli_fetch_assoc($result)) : ?>
             <tr>
                 <td><img src="<?= glob("Images/" . $product['id'] . ".*")[0]; ?>" style="width: 100px; height:90px;"></td>

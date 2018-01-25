@@ -16,7 +16,7 @@ function translate($string)
     return $string;
 }
 
-if (!isset($_SESSION['ids'])) {
-    $_SESSION['ids'] = array();
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = array();
 }
 
