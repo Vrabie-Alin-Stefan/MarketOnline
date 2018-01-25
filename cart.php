@@ -75,7 +75,6 @@
         $result = mysqli_stmt_get_result($stmt);
     }  
 ?>
-
 <html>
 <head>
 
@@ -95,20 +94,16 @@
                     <td><?= $product["title"]?></td>
                     <td><?= $product["description"]?></td>
                     <td><?= $product["price"]?></td>
-                    <td><a href="?delId=<?= $product['id'] ?>"><?= translate('Remove') ?></a></td> 
-                    
+                    <td><a href="?delId=<?= $product['id'] ?>"><?= translate('Remove') ?></a></td>   
                 </tr>
     <?php endwhile; ?>
 </table>
 </br>
 <form method="POST" action="cart.php">
-
-<input type="text" name="name" placeholder= <?= translate('Name') ?>  value="<?= !isset($_POST['name']) ?  "" : strip_tags($_POST['name']) ?>"></br>
-<input type="text" name="adress" placeholder= <?= translate('Contact details') ?> value="<?= !isset($_POST['adress']) ?  "" : strip_tags($_POST['adress']) ?>" ></br>
-<input type="text" name="comm" placeholder= <?= translate('Comments') ?> value="<?= !isset($_POST['comm']) ?  "" : strip_tags($_POST['comm']) ?>"></br>
-
-<input type="submit" name="send" value="<?= translate('Checkout') ?>" >
-
+    <input type="text" name="name" placeholder= <?= translate('Name') ?>  value="<?= !isset($_POST['name']) ?  "" : strip_tags($_POST['name']) ?>"></br>
+    <input type="text" name="adress" placeholder= <?= translate('Contact details') ?> value="<?= !isset($_POST['adress']) ?  "" : strip_tags($_POST['adress']) ?>" ></br>
+    <input type="text" name="comm" placeholder= <?= translate('Comments') ?> value="<?= !isset($_POST['comm']) ?  "" : strip_tags($_POST['comm']) ?>"></br>
+    <input type="submit" name="send" value="<?= translate('Checkout') ?>" >
 </form>
 <a href = "index.php"><?= translate('Go To Index') ?></a>
 
