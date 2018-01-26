@@ -5,23 +5,22 @@
     if ($_SESSION['admin'] == "dissconected"){
         header("Location: index.php");
         die();
-    } 
-    else {
-        $allProducts = "SELECT * FROM products";
-        $products = mysqli_query($conn, $allProducts);
+    }
 
-        if (isset($_GET['idDel'])) {   
-            if (in_array($_GET['idDel'], $_SESSION['cart'])) {
-                $pos = array_search($_GET['idDel'], $_SESSION['cart']);
-                unset ($_SESSION['cart'][$pos]);
-            }
-            $myImage = glob("Images/" . $_GET['idDel'] . ".*")[0];
-            unlink ($myImage);
-            $delString = "DELETE FROM products WHERE id=" . $_GET['idDel'] . "";
-            if (mysqli_query($conn,$delString)) {
-                header("Location: products.php");
-                die();
-            }
+    $allProducts = "SELECT * FROM products";
+    $products = mysqli_query($conn, $allProducts);
+
+    if (isset($_GET['idDel'])) {   
+        if (in_array($_GET['idDel'], $_SESSION['cart'])) {
+            $pos = array_search($_GET['idDel'], $_SESSION['cart']);
+            unset ($_SESSION['cart'][$pos]);
+        }
+        $myImage = glob("Images/" . $_GET['idDel'] . ".*")[0];
+        unlink ($myImage);
+        $delString = "DELETE FROM products WHERE id=" . $_GET['idDel'] . "";
+        if (mysqli_query($conn,$delString)) {
+            header("Location: products.php");
+            die();
         }
     }
 ?>
