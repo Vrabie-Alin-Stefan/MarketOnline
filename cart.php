@@ -4,61 +4,10 @@
     if (isset($_GET['delId'])) { 
         if (in_array($_GET['delId'], $_SESSION['cart'])) {   
             $pos = array_search($_GET['delId'], $_SESSION['cart']);
-            unset($_SESSION['cart'][$pos]);
-            sort($_SESSION['cart']); 
-            $prodArray = $_SESSION['cart'];     
-        }
-    }    
-    
-    $prodArray = $_SESSION['cart'];
-    sort($_SESSION['cart']); 
-    
-    if(isset($_POST['send'])) {
-        
-        $error = "";
-        
-        if (count($_SESSION['cart']) == 0) {
-            $error = "Your cart is empty.";
-        }
-        if (empty($_POST['name'])) {
-            $error = "Name invalid.<br>";
-        } else {
-            $nameUser = htmlspecialchars($_POST['name']);
-            $nameUser = strip_tags($nameUser);
-        }
-        
-        if (empty($_POST['adress'])) {
-            $error = "Adress invalid.<br>";
-        } else {
-            $adressUser = htmlspecialchars($_POST['adress']);
-            $adressUser = strip_tags($adressUser);
-        }
-
-        $commUser = htmlspecialchars($_POST['comm']);
-        $commUser = strip_tags($commUser);
-        
-        $headers = 'From: <alinvs09@gmail.com>' . "\r\n";
-        $headers .= 'Cc: alinvs09@gmail.com' . "\r\n";
-        
-        if ($error == "") {
-            $message = "Name: " . $nameUser . "\n" . "Adress: " . $adressUser . "\n" . "Comments: " . $commUser . "Products: \n";
-            
-            for ($i = 0 ; $i < count($_SESSION['cart']) ; $i++) 
-            {
-                $prods = "SELECT * FROM products WHERE id = '$prodArray[$i]'";
-                $products = mysqli_query($conn, $prods);
-                if ($product = mysqli_fetch_assoc($products)) {
-                    $message = $message . $product["title"] . " " . $product["description"] . " " . $product["price"] . "\n";
-                }
-            }  
-            mail(ADMIN_EMAIL, "New order", $message, $headers); 
-            echo "Order was plced!";
-            unset($_POST);
-        } else {
-            echo $error;
+            unset($_SESSION['cart'][$pos]);    
         }
     }
-    
+
     if (count($_SESSION['cart'])) {        
         $numberParams = str_repeat('?,', count($_SESSION['cart']) - 1) .'?';
         $numberType = str_repeat('d', count($_SESSION['cart']));
@@ -73,14 +22,51 @@
         call_user_func_array("mysqli_stmt_bind_param", $refarg);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
-    }  
+    }    
+    
+    if(isset($_POST['send'])) {
+        
+        $error = 0;
+        
+        if (!count($_SESSION['cart'])) {
+            $error = 1;
+        }
+        if (empty($_POST['name'])) {
+            $error = 1;
+        } else {
+            $nameUser = strip_tags($_POST['name']);
+        }
+        
+        if (empty($_POST['adress'])) {
+            $error = 1;
+        } else {
+            $adressUser = strip_tags($_POST['adress']);
+        }
+
+        $commUser = strip_tags($_POST['comm']);
+        
+        $headers = 'From: <alinvs09@gmail.com>' . "\r\n";
+        $headers .= 'Cc: alinvs09@gmail.com' . "\r\n";
+        
+        if ($error == 0) {
+            $message = "<html><body><table>";
+            $message .= "<tr><td>Name: " . $nameUser . "</td></tr><tr><td>" . "Adress: " . $adressUser . "</td></tr><tr><td>" . "Comments: " . $commUser . "</td></tr>";    
+            $message .= "<tr><th>Products</th><th>Title</th><th>Description</th><th>Price</th></tr>";    
+            while ($product = mysqli_fetch_assoc($result)) {
+                $message .= "<tr><td><img src=\"". glob("Images/" . $product['id'] . ".*")[0] ."\" style='width: 100px; height:90px;'></td><td>" . $product["title"] . "</td><td>" . $product["description"] . "</td><td>" . $product["price"] . "</td><tr>";
+            }
+            mysqli_data_seek($result, 0);
+            $message .= "</table></body></html>";
+            mail(ADMIN_EMAIL, "New order", $message, $headers); 
+            unset($_POST);
+        }     
+    }   
 ?>
 <html>
 <head>
 
 </head>
 <body>
-
 <table>
     <tr>
         <th></th>
@@ -88,15 +74,17 @@
         <th><?= translate('Description') ?>: </th>
         <th><?= translate('Price') ?>: </th>
     </tr>
-    <?php while ($product = mysqli_fetch_assoc($result)) : ?>
-                <tr>
-                    <td><img src="<?= glob("Images/" . $product['id'] . ".*")[0]; ?>" style="width: 100px; height:90px;"></td>
-                    <td><?= $product["title"]?></td>
-                    <td><?= $product["description"]?></td>
-                    <td><?= $product["price"]?></td>
-                    <td><a href="?delId=<?= $product['id'] ?>"><?= translate('Remove') ?></a></td>   
-                </tr>
-    <?php endwhile; ?>
+    <?php if (count($_SESSION['cart'])) : ?>
+        <?php while ($product = mysqli_fetch_assoc($result)) : ?>
+        <tr>
+            <td><img src="<?= glob("Images/" . $product['id'] . ".*")[0]; ?>" style="width: 100px; height:90px;"></td>
+            <td><?= $product["title"]?></td>
+            <td><?= $product["description"]?></td>
+            <td><?= $product["price"]?></td>
+            <td><a href="?delId=<?= $product['id'] ?>"><?= translate('Remove') ?></a></td>   
+        </tr>
+        <?php endwhile; ?>
+    <?php endif; ?>
 </table>
 </br>
 <form method="POST" action="cart.php">
