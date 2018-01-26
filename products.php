@@ -2,25 +2,26 @@
 
     require_once ('common.php');
 
-    if (!isset($_GET['con'])){
+    if ($_SESSION['admin'] == "dissconected"){
         header("Location: index.php");
         die();
-    }
+    } 
+    else {
+        $allProducts = "SELECT * FROM products";
+        $products = mysqli_query($conn, $allProducts);
 
-    $allProducts = "SELECT * FROM products";
-    $products = mysqli_query($conn, $allProducts);
-
-    if (isset($_GET['idDel'])) {   
-        if (in_array($_GET['idDel'], $_SESSION['cart'])) {
-            $pos = array_search($_GET['idDel'], $_SESSION['cart']);
-            unset ($_SESSION['cart'][$pos]);
-        }
-        $myImage = glob("Images/" . $_GET['idDel'] . ".*")[0];
-        unlink ($myImage);
-        $delString = "DELETE FROM products WHERE id=" . $_GET['idDel'] . "";
-        if (mysqli_query($conn,$delString)) {
-            header("Location: products.php?con=admin_connected");
-            die();
+        if (isset($_GET['idDel'])) {   
+            if (in_array($_GET['idDel'], $_SESSION['cart'])) {
+                $pos = array_search($_GET['idDel'], $_SESSION['cart']);
+                unset ($_SESSION['cart'][$pos]);
+            }
+            $myImage = glob("Images/" . $_GET['idDel'] . ".*")[0];
+            unlink ($myImage);
+            $delString = "DELETE FROM products WHERE id=" . $_GET['idDel'] . "";
+            if (mysqli_query($conn,$delString)) {
+                header("Location: products.php");
+                die();
+            }
         }
     }
 ?>
@@ -44,14 +45,14 @@
             <td><?= $product["description"]?></td>
             <td><?= $product["price"]?></td>
             <td><a href="product.php?idEdit=<?= $product["id"]?>&title=<?= $product["title"]?>&description=<?= $product["description"]?>&price=<?= $product["price"]?>"><?= translate('Edit') ?></a> </td>
-            <td><a href="?con=admin_connected&idDel=<?= $product["id"]?>"><?= translate('Delete') ?></a> </td>
+            <td><a href="?idDel=<?= $product["id"]?>"><?= translate('Delete') ?></a> </td>
         </tr>
     <?php  endwhile; ?>
 
 </table>
 
 <a href="product.php?add=1"><?= translate('Add') ?></a>
-<a href="index.php"><?= translate('Go To Login') ?></a>
+<a href="index.php"><?= translate('Logout') ?></a>
 
 </body>
 </html>

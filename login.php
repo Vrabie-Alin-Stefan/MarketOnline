@@ -7,7 +7,8 @@
         $passUser = strip_tags($_POST['pass']);
 
         if ($nameUser === ADMIN_NAME && $passUser === ADMIN_PASS) {
-            header("Location: products.php?con=admin_connected");
+            $_SESSION['admin'] = "connected";
+            header("Location: products.php");
             die();
         }
     }

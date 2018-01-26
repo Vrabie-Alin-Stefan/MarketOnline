@@ -91,7 +91,7 @@ if (isset($_POST['save'])) {
     <input type="submit" name="save" value="<?= translate('Save') ?>">
 </form>
 <?php endif; ?>
-<a href="products.php?con=admin_connected"><?= translate('Products') ?></a>
+<a href="products.php"><?= translate('Products') ?></a>
 </body>
 
 </html>
